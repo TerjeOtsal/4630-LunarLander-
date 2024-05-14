@@ -1,0 +1,7 @@
+This project aim to solve The Lunar Lander environment for a continious action space using a DDPG algorithm
+
+Nothing exept for the necessary imports are needed to run the DDPG implementation script
+
+The finished model is in the actor.pth and is called into the trainedmodel.py file for demonstration 
+
+
