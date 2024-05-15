@@ -7,6 +7,7 @@ import torch as T
 import random
 import gym
 import matplotlib.pyplot as plt
+import os
 # Ornstein-Uhlenbeck Action Noise
 class OUActionNoise():
     def __init__(self, mu, sigma=0.15, theta=0.2, dt=1e-2, x0=None):
@@ -253,11 +254,12 @@ class Agent():
         self.target_actor.load_state_dict(actor_state_dict)
 
 def save_models():
-    T.save(agent.actor.state_dict(), 'SavedModel.pth')
-    T.save(agent.critic.state_dict(), 'critic.pth')
-    T.save(agent.target_actor.state_dict(), 'target_actor.pth')
-    T.save(agent.target_critic.state_dict(), 'target_critic.pth')
-    print("Models saved successfully.")   
+    if not os.path.exists('SavedModel'):
+        os.makedirs('SavedModel')
+    T.save(agent.actor.state_dict(), 'SavedModel/actor.pth')
+    T.save(agent.critic.state_dict(), 'SavedModel/critic.pth')
+    T.save(agent.target_actor.state_dict(), 'SavedModel/target_actor.pth')
+    T.save(agent.target_critic.state_dict(), 'SavedModel/target_critic.pth')
 
 def plot_learning_curve(x, scores, figure_file):
     running_avg = np.zeros(len(scores))

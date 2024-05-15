@@ -66,7 +66,7 @@ class Agent():
         self.actor.to(self.actor.device)  # Move actor network to the correct device
 
     def load_models(self):
-        self.actor.load_state_dict(T.load('savedModel.pth'))  # Load pre-trained model weights
+        self.actor.load_state_dict(T.load('SavedModel/actor.pth'))   # Load pre-trained model weights
 
     def choose_action(self, observation):
         self.actor.eval()  # Set network to evaluation mode
