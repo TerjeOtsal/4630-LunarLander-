@@ -1,5 +1,5 @@
 This project aim to solve The Lunar Lander environment for a continious action space using a DDPG algorithm
-
+Link to github https://github.com/TerjeOtsal/4630-LunarLander-
 Nothing exept for the necessary imports are needed to run the DDPG implementation script
 
 The files were supposed to be in a Source folder, however due to pathing errors. they will be placed in the 4630-LunarLander main directory
