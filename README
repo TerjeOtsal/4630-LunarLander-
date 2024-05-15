@@ -4,4 +4,46 @@ Nothing exept for the necessary imports are needed to run the DDPG implementatio
 
 The finished model is in the actor.pth and is called into the trainedmodel.py file for demonstration 
 
+To run the provided script, you need to have the following packages installed:
 
+numpy (version 1.21.0)
+torch (version 1.9.0)
+gym (version 0.21.0)
+matplotlib (version 3.4.2)
+You can install these packages using the following pip commands:
+pip install numpy==1.21.0
+pip install torch==1.9.0
+pip install gym==0.21.0
+pip install matplotlib==3.4.2
+!sudo apt-get install -y swig
+!pip install box2d-py
+!pip install gym[box2d]
+# LunarLander-v2 Agent
+
+This project implements a Deep Deterministic Policy Gradient (DDPG) agent to solve the LunarLander-v2 environment from OpenAI Gym.
+
+## Installation
+
+To set up the environment, install the following dependencies:
+
+```bash
+pip install numpy==1.21.0
+pip install torch==1.9.0
+pip install gym==0.21.0
+pip install matplotlib==3.4.2
+
+python trainedmodel.py
+
+to run the dppg_implementation.py use python dppg_implemeentation.py   # keep in mind this will reset the weights of the current actor.pth file!
+
+Contribution
+This project was a collaborative effort, with each participant contributing 100%. The specific contributions are as follows:
+
+Mahendran Sharujan Karthigesu
+makar8270@oslomet.no:  Conducted extensive research and gathered previously known versions of the code, aswell as refining the code we provided.
+
+Terje Saltskar
+s351881@oslomet.no: Made significant contributions to testing parameters, code structure, and the code for running the finished agent.
+
+Mehdi Heidari
+s338859@oslomet.no: Focused on developing and refining the code architecture, ensuring the model's effective implementation for the project.
