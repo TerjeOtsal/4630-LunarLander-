@@ -1,3 +1,4 @@
+#needed Imports
 import numpy as np
 import torch.nn as nn
 import torch.optim as optim
@@ -6,9 +7,10 @@ import torch as T
 import random
 import gym
 import matplotlib.pyplot as plt
-
+# Ornstein-Uhlenbeck Action Noise
 class OUActionNoise():
     def __init__(self, mu, sigma=0.15, theta=0.2, dt=1e-2, x0=None):
+        # Initialize parameters
         self.theta = theta
         self.mu = mu
         self.sigma = sigma
@@ -17,6 +19,7 @@ class OUActionNoise():
         self.reset()
 
     def __call__(self):
+        # Generate noise
         x = self.x_prev + self.theta * (self.mu - self.x_prev) * self.dt + \
                 self.sigma * np.sqrt(self.dt) * np.random.normal(size=self.mu.shape)
         self.x_prev = x
@@ -24,11 +27,13 @@ class OUActionNoise():
         return x
 
     def reset(self):
+        # Reset noise to initial state
         self.x_prev = self.x0 if self.x0 is not None else np.zeros_like(self.mu)
 
-
+# Replay Buffer for Experience Replay
 class ReplayBuffer():
     def __init__(self, max_size, input_shape, n_actions):
+        # Initialize memory buffer
         self.mem_size = max_size
         self.mem_cntr = 0
         self.state_memory = np.zeros((self.mem_size, *input_shape))
@@ -38,6 +43,7 @@ class ReplayBuffer():
         self.terminal_memory = np.zeros(self.mem_size, dtype=bool)
 
     def store_transition(self, state, action, reward, state_, done):
+        # Store transition in memory
         index = self.mem_cntr % self.mem_size
         self.state_memory[index] = state
         self.action_memory[index] = action
@@ -48,8 +54,8 @@ class ReplayBuffer():
         self.mem_cntr += 1
 
     def sample_buffer(self, batch_size):
+        # Sample a batch from memory
         max_mem = min(self.mem_cntr, self.mem_size)
-
         batch = np.random.choice(max_mem, batch_size)
 
         states = self.state_memory[batch]
@@ -64,32 +70,44 @@ class ReplayBuffer():
 class CriticNetwork(nn.Module):
     def __init__(self, beta, input_dims, fc1_dims, fc2_dims, n_actions):
         super(CriticNetwork, self).__init__()
+        # Initialize critic network layers
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
         self.fc2_dims = fc2_dims
         self.n_actions = n_actions
 
+        # Define fully connected layers
         self.fc1 = nn.Linear(*self.input_dims, self.fc1_dims)
         self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
 
+        # Batch normalization layers for stabilizing training
         self.bn1 = nn.LayerNorm(self.fc1_dims)
         self.bn2 = nn.LayerNorm(self.fc2_dims)
 
+        # Action value layer to incorporate action information
         self.action_value = nn.Linear(self.n_actions, self.fc2_dims)
-        
+
+        # Output layer to calculate Q-values
         self.q = nn.Linear(self.fc2_dims, 1)
 
+        # Adam optimizer for training
         self.optimizer = optim.Adam(self.parameters(), lr=beta,
                                     weight_decay=0.01)
 
     def forward(self, state, action):
+        # Forward pass of critic network
         state_value = self.fc1(state)
         state_value = self.bn1(state_value)
         state_value = F.relu(state_value)
         state_value = self.fc2(state_value)
         state_value = self.bn2(state_value)
+        # Incorporate action information
         action_value = self.action_value(action)
+
+        # Combine state and action values
         state_action_value = F.relu(T.add(state_value, action_value))
+
+        # Calculate Q-values
         state_action_value = self.q(state_action_value)
 
         return state_action_value
@@ -98,19 +116,20 @@ class CriticNetwork(nn.Module):
 class ActorNetwork(nn.Module):
     def __init__(self, alpha, input_dims, fc1_dims, fc2_dims, n_actions):
         super(ActorNetwork, self).__init__()
+        # Initialize actor network layers
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
         self.fc2_dims = fc2_dims
         self.n_actions = n_actions
-
+        # Define fully connected layers
         self.fc1 = nn.Linear(*self.input_dims, self.fc1_dims)
         self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
-
+        # Batch normalization layers for stabilizing training
         self.bn1 = nn.LayerNorm(self.fc1_dims)
         self.bn2 = nn.LayerNorm(self.fc2_dims)
-
+        # Output layer for mean action values
         self.mu = nn.Linear(self.fc2_dims, self.n_actions)
-
+    # Adam optimizer for training
         self.optimizer = optim.Adam(self.parameters(), lr=alpha)
         
         self.device = T.device('cuda' if T.cuda.is_available() else 'cpu')
@@ -122,7 +141,7 @@ class ActorNetwork(nn.Module):
         x = self.fc2(x)
         x = self.bn2(x)
         x = F.relu(x)
-        x = T.tanh(self.mu(x))
+        x = T.tanh(self.mu(x))   # Scale output to range [-1, 1] for continuous action space
 
         return x
 
@@ -131,6 +150,7 @@ class Agent():
     def __init__(self, alpha, beta, input_dims, tau, n_actions, gamma=0.99,
                  max_size=1000000, fc1_dims=400, fc2_dims=300, 
                  batch_size=64):
+           # Initialize DDPG agent
         self.gamma = gamma
         self.tau = tau
         self.batch_size = batch_size
@@ -155,6 +175,7 @@ class Agent():
         self.update_network_parameters(tau=1)
 
     def choose_action(self, observation):
+           # Choose action with noise
         self.actor.eval()
         state = T.tensor([observation], dtype=T.float).to(self.actor.device)
         mu = self.actor.forward(state).to(self.actor.device)
@@ -165,9 +186,11 @@ class Agent():
         return mu_prime.cpu().detach().numpy()[0]
 
     def remember(self, state, action, reward, state_, done):
+         # Remember experience
         self.memory.store_transition(state, action, reward, state_, done)
 
     def learn(self):
+         # Update critic and actor networks
         if self.memory.mem_cntr < self.batch_size:
             return
 
@@ -204,6 +227,7 @@ class Agent():
         self.update_network_parameters()
 
     def update_network_parameters(self, tau=None):
+          # Update target networks
         if tau is None:
             tau = self.tau
 
@@ -253,7 +277,9 @@ def plot_best_scores(x, scores, figure_file):
     plt.savefig(figure_file)   
     
 if __name__ == '__main__':
+    # LunarLander environment
     env = gym.make('LunarLander-v2', continuous=True, gravity=random.uniform(-12, 0), turbulence_power=np.random.uniform(0.5, 2.0), enable_wind=True, wind_power=random.uniform(0, 20), render_mode="human")
+    # Initialize the agent
     agent = Agent(alpha=0.0002, beta=0.002, 
                   input_dims=env.observation_space.shape, tau=0.005,
                   batch_size=96, fc1_dims=600, fc2_dims=450, 
