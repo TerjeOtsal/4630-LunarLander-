@@ -2,8 +2,6 @@ This project aim to solve The Lunar Lander environment for a continious action s
 
 Nothing exept for the necessary imports are needed to run the DDPG implementation script
 
-The finished model is in the actor.pth and is called into the trainedmodel.py file for demonstration 
-
 To run the provided script, you need to have the following packages installed:
 
 numpy (version 1.21.0)
@@ -33,7 +31,9 @@ pip install matplotlib==3.4.2
 
 python trainedmodel.py
 
-to run the dppg_implementation.py use python dppg_implemeentation.py   # keep in mind this will reset the weights of the current actor.pth file!
+To run the dppg_implementation.py use python dppg_implemeentation.py   # keep in mind this will reset the weights of the current actor.pth file!
+
+The finished model is in the actor.pth and is called into the trainedmodel.py file for demonstration 
 
 Contribution
 This project was a collaborative effort, with each participant contributing 100%. The specific contributions are as follows:
