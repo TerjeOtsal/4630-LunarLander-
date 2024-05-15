@@ -105,10 +105,11 @@ if __name__ == '__main__':
 
     env.close()  # Close the environment
 
-    # Plotting the scores
+     # Plotting the scores
     plt.plot(scores, label='Score per Episode')  # Plot scores
     plt.title('Performance of Trained Model')  # Plot title
     plt.xlabel('Episode')  # X-axis label
     plt.ylabel('Score')  # Y-axis label
     plt.legend()  # Show legend
+    plt.savefig('trained_model_results.png')  # Save the plot as an image
     plt.show()  # Display plot
