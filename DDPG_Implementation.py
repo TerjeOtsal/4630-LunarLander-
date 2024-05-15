@@ -253,7 +253,7 @@ class Agent():
         self.target_actor.load_state_dict(actor_state_dict)
 
 def save_models():
-    T.save(agent.actor.state_dict(), 'actor.pth')
+    T.save(agent.actor.state_dict(), 'SavedModel.pth')
     T.save(agent.critic.state_dict(), 'critic.pth')
     T.save(agent.target_actor.state_dict(), 'target_actor.pth')
     T.save(agent.target_critic.state_dict(), 'target_critic.pth')

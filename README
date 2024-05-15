@@ -2,6 +2,8 @@ This project aim to solve The Lunar Lander environment for a continious action s
 
 Nothing exept for the necessary imports are needed to run the DDPG implementation script
 
+The files were supposed to be in a Source folder, however due to pathing errors. they will be placed in the 4630-LunarLander main directory
+
 To run the provided script, you need to have the following packages installed:
 
 numpy (version 1.21.0)
