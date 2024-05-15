@@ -15,7 +15,9 @@ pip install numpy==1.21.0
 pip install torch==1.9.0
 pip install gym==0.21.0
 pip install matplotlib==3.4.2
-
+!sudo apt-get install -y swig
+!pip install box2d-py
+!pip install gym[box2d]
 # LunarLander-v2 Agent
 
 This project implements a Deep Deterministic Policy Gradient (DDPG) agent to solve the LunarLander-v2 environment from OpenAI Gym.
